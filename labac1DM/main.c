@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     {
         while ((c = getc(fp)) != EOF)
         {
-            if ((strchr("+-^*", c)) == NULL)
+            if ((strchr("+-^* ", c)) == NULL)
             {
                 variables = append(variables, c);
             }
@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
     fclose(fp);
 
     printList(variables);
+
+    printf("%d\n",len(variables));
 
     printf("\n");
     return 0;

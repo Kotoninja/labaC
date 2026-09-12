@@ -10,5 +10,6 @@ typedef struct ListNode
 ListNode *append(ListNode *list, int value);
 ListNode *delete(ListNode *list, int value);
 int printList(ListNode *list);
+int len(ListNode *list);
 
 #endif // LIST_H

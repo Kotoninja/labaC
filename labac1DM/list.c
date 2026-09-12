@@ -52,13 +52,28 @@ int printList(ListNode *list)
 
         list = list->next;
 
-        if (list) {
+        if (list)
+        {
             printf(", ");
         }
     }
 
     printf("]\n");
     return 0;
+}
+
+int len(ListNode *list)
+{
+    if (list == NULL) return 0;
+    int count;
+
+    while (list)
+    {
+        count++;
+        list = list->next;
+    }
+
+    return count;
 }
 
 // int main(void)
