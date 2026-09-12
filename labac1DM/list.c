@@ -48,7 +48,7 @@ int printList(ListNode *list)
     printf("[");
     while (list)
     {
-        printf("%d", list->data);
+        printf("%c", list->data);
 
         list = list->next;
 
