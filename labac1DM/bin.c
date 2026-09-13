@@ -16,18 +16,33 @@ int convertToBin(int number)
     int binNumber = 0;
     int i = 0;
     int lenDigits = len(digits);
-    printList(digits);
     while (digits)
     {
-        binNumber += digits->data.ival * pow(10, lenDigits -1- i);
+        binNumber += digits->data.ival * pow(10, lenDigits - 1 - i);
         i++;
         digits = digits->next;
     }
     return binNumber;
 }
 
-// int main(void)
-// {
-//     int number = convertToBin(25);
-//     printf("%d\n", number);
-// }
+int main(void)
+{
+    {
+        int number = convertToBin(25);
+        int expectedNumber = 11001;
+        printf("%d", number == expectedNumber);
+    }
+
+    {
+        int number = convertToBin(42);
+        int expectedNumber = 101010;
+        printf("%d", number == expectedNumber);
+    }
+
+    {
+        int number = convertToBin(5);
+        int expectedNumber = 101;
+        printf("%d", number == expectedNumber);
+    }
+    printf("\n");
+}
