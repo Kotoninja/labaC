@@ -18,9 +18,10 @@ typedef struct ListNode
     struct ListNode *next;
 } ListNode;
 
-ListNode *append(ListNode *list, int value);
+ListNode *appendInt(ListNode *list, int value);
+ListNode *appendSte(ListNode *list, char value);
 ListNode *delete (ListNode *list, int value);
 int printList(ListNode *list);
 int len(ListNode *list);
 
-#endif // LIST_H
+#endif
