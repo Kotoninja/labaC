@@ -13,3 +13,7 @@ list:
 bin: 
 	clang bin.c list.c -o app
 	./app
+
+stack:
+	clang stack.c -o app
+	./app
