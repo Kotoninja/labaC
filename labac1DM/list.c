@@ -103,7 +103,7 @@ int len(ListNode *list)
 
 void clear(ListNode *list)
 {
-    while (!list)
+    while (list)
     {
         ListNode *next = list->next;
         if (list->type == TYPE_STR)

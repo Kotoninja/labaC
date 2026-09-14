@@ -19,7 +19,7 @@ typedef struct ListNode
 } ListNode;
 
 ListNode *appendInt(ListNode *list, int value);
-ListNode *appendStr(ListNode *list, char value);
+ListNode *appendStr(ListNode *list, char *value);
 ListNode *delete (ListNode *list, int value);
 int printList(ListNode *list);
 int len(ListNode *list);
