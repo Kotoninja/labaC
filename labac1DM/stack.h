@@ -7,10 +7,12 @@ typedef struct StackNode
     struct StackNode *nextPtr;
 } StackNode;
 
-typedef StackNode* StackNodePtr;
+typedef StackNode *StackNodePtr;
 
 void push(StackNodePtr *top, int value);
 int pop(StackNodePtr *top);
 void printStack(StackNodePtr top);
+int isEmpty(StackNodePtr top);
+char stackTop(StackNodePtr topPtr);
 
 #endif
