@@ -3,7 +3,7 @@
 file ?= data.txt
 
 run:
-	clang main.c stack.c -o app
+	clang main.c stack.c bin.c list.c -o app
 	./app -file=$(file)
 
 list:
