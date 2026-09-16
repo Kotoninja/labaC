@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "stack.h"
 #include <string.h>
+#include "bin.h"
 
 #define MAX_SIZE 1024
 
@@ -76,7 +77,8 @@ void convertToPostfix(char infix[], char postfix[])
             while (!isEmpty(stack))
             {
                 char topValue = stackTop(stack);
-                if (topValue == '(') {
+                if (topValue == '(')
+                {
                     pop(&stack);
                     break;
                 }
@@ -108,6 +110,7 @@ int main(int argc, char *argv[])
         filename = strchr(argv[1], '=') + 1;
     }
 
+    // Открытие файла для чтения
     FILE *fp = fopen(filename, "r");
 
     if (fp == NULL)
@@ -120,13 +123,30 @@ int main(int argc, char *argv[])
     char infix[MAX_SIZE];
     int len = 0;
     int symbol;
+    int countOfVariables;
 
     while ((symbol = getc(fp)) != EOF && len < MAX_SIZE - 1)
     {
         if (symbol != ' ')
         {
             infix[len++] = (char)symbol;
-            // printf("%c", symbol);
+            // Cчитаем количество переменных
+            switch (symbol)
+            {
+            case '!':
+            case '&':
+            case '(':
+            case ')':
+            case '^':
+            case '|':
+            {
+                continue;
+            }
+            default:
+            {
+                countOfVariables++;
+            }
+            }
         }
     }
     infix[len] = '\0';
@@ -152,12 +172,17 @@ int main(int argc, char *argv[])
     // printf("%d\n", len(variables));
 
     // int countOfOperation = pow(2, len(variables));
-    // int countOfOperation = 1 << len(variables);
-    // for (int i = 0; i < 1; i++)
-    // {
-    //     const char binNumber = convertToBin(i);
-    //     printf("%08d\n", binNumber[0]);
-    // }
+    int countOfOperation = 1 << countOfVariables; // 16
+    printf("countOfOperation - %d\n", countOfOperation);
+    for (int i = 0; i < countOfOperation; i++)
+    {
+
+        int binNumber = convertToBin(i);
+        printf("bin %d\n", binNumber);
+        // for (int bit = countOfVariables - 1; bit >= 0; bit--)
+        //     putchar('0' + ((i >> bit) & 1));
+        // putchar('\n');
+    }
 
     printf("\n");
     return 0;
