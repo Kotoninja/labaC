@@ -113,38 +113,38 @@ void clear(ListNode *list)
     }
 }
 
-int main(void)
-{
-    ListNode *ln = NULL;
+// int main(void)
+// {
+//     ListNode *ln = NULL;
 
-    // Append to list 10 numbers
-    for (int i = 0; i < 10; i++)
-    {
-        ln = appendInt(ln, i);
-    }
+//     // Append to list 10 numbers
+//     for (int i = 0; i < 10; i++)
+//     {
+//         ln = appendInt(ln, i);
+//     }
 
-    //     // Append 5 strings
-    //     for (int i = 0; i < 5; i++)
-    //     {
-    //         ln = appendStr(ln, "a");
-    //     }
+//     //     // Append 5 strings
+//     //     for (int i = 0; i < 5; i++)
+//     //     {
+//     //         ln = appendStr(ln, "a");
+//     //     }
 
-    // Test Print
-    printList(ln); // [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+//     // Test Print
+//     printList(ln); // [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
-    //     // Test Append
-    //     ln = appendInt(ln, 67);
-    //     printList(ln);
+//     //     // Test Append
+//     //     ln = appendInt(ln, 67);
+//     //     printList(ln);
 
-    //     // Test append string
-    //     ln = appendStr(ln, "b");
-    //     printList(ln);
+//     //     // Test append string
+//     //     ln = appendStr(ln, "b");
+//     //     printList(ln);
 
-    //     // Test delete
-    //     ln = delete(ln, 0);
-    //     printList(ln);
+//     //     // Test delete
+//     //     ln = delete(ln, 0);
+//     //     printList(ln);
 
-    //     printf("%d\n", len(ln));
-    printf("\n");
-    return 0;
-}
+//     //     printf("%d\n", len(ln));
+//     printf("\n");
+//     return 0;
+// }

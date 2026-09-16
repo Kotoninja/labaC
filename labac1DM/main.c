@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     }
 
     // Создаем массив куда записываются данные из файла (в массиве только операции и операнды)
-    char infix[MAX_SIZE];
+    char infix[MAX_SIZE]; //    a | ( b & c ^ d )
     int len = 0;
     int symbol;
     int countOfVariables;
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
     fclose(fp);
 
     // Создаем массив для постфиксного выражения
-    char postfix[len];
+    char postfix[len];//    a b c & d ^ |
 
     // for (int i = 0; i < len; i++)
     // {
@@ -162,10 +162,11 @@ int main(int argc, char *argv[])
     // }
 
     convertToPostfix(infix, postfix);
-    // for (int i = 0; i < len; i++)
-    // {
-    //     printf("%c ", postfix[i]);
-    // }
+    
+    for (int i = 0; i < len; i++)
+    {
+        printf("%c ", postfix[i]);
+    }
 
     // printList(variables);
 
