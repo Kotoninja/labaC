@@ -100,6 +100,7 @@ void convertToPostfix(char infix[], char postfix[])
 
 int main(int argc, char *argv[])
 {
+    // Парсинг флага
     char *filename = NULL;
 
     if (strncmp(argv[1], "-file", 5) == 0)
@@ -115,6 +116,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // Создаем массив куда записываются данные из файла (в массиве только операции и операнды)
     char infix[MAX_SIZE];
     int len = 0;
     int symbol;
@@ -131,17 +133,19 @@ int main(int argc, char *argv[])
 
     fclose(fp);
 
+    // Создаем массив для постфиксного выражения
     char postfix[len];
+
     // for (int i = 0; i < len; i++)
     // {
     //     printf("%c", infix[i]);
     // }
 
     convertToPostfix(infix, postfix);
-    for (int i = 0; i < len; i++)
-    {
-        printf("%c ", postfix[i]);
-    }
+    // for (int i = 0; i < len; i++)
+    // {
+    //     printf("%c ", postfix[i]);
+    // }
 
     // printList(variables);
 
