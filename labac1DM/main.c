@@ -4,9 +4,22 @@
 #include "stack.h"
 #include <string.h>
 
+/*
+Как делаем:
+1. Парсим флаг с указанием файла с stdin
+2. Открываем файл и читаем данны в массив char (инфиксная запись)
+    1. Отдельно считаем количество переменных в выражении (n)
+3. Конвертируем инфиксную запись в постфиксную
+4. Создаем цикл с 2^n итерациями (для построения таблицы истинности). Переводим i-ую итерацию в двоичное число, каждый элемент которого будет в стеке
+5. В i-ой итерации передаем stack с элементами двочиного числа и выражение в функцию convertToPostfix и выводим результат
+*/
+
 #define MAX_SIZE 1024
 
 int Priority(char symbol)
+/**
+ * @brief Возвращает приоритет логической операции
+ */
 {
     switch (symbol)
     {
@@ -26,6 +39,9 @@ int Priority(char symbol)
 }
 
 void convertToPostfix(char infix[], char postfix[])
+/**
+ * @brief Конвертирет инфиксное выражение из infix в посфиксное и записывает его в postfix
+ */
 {
     int lenInfix = strlen(infix);
     StackNodePtr stack = NULL;
@@ -76,7 +92,8 @@ void convertToPostfix(char infix[], char postfix[])
             while (!isEmpty(stack))
             {
                 char topValue = stackTop(stack);
-                if (topValue == '(') {
+                if (topValue == '(')
+                {
                     pop(&stack);
                     break;
                 }
@@ -99,6 +116,9 @@ void convertToPostfix(char infix[], char postfix[])
 }
 
 int main(int argc, char *argv[])
+/**
+ * @brief Сборка всей логики
+ */
 {
     // Парсинг флага
     char *filename = NULL;
