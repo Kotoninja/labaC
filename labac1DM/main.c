@@ -17,6 +17,9 @@
 
 #define MAX_SIZE 1024
 
+/// @brief Возвращает приоритет логической операции
+/// @param symbol 
+/// @return 
 int Priority(char symbol)
 /**
  * @brief Возвращает приоритет логической операции
@@ -39,6 +42,9 @@ int Priority(char symbol)
     }
 }
 
+/// @brief Конвертирет инфиксное выражение из infix в посфиксное и записывает его в postfix
+/// @param infix 
+/// @param postfix 
 void convertToPostfix(char infix[], char postfix[])
 /**
  * @brief Конвертирет инфиксное выражение из infix в посфиксное и записывает его в postfix
@@ -116,6 +122,10 @@ void convertToPostfix(char infix[], char postfix[])
     }
 }
 
+/// @brief Сборка всей логики
+/// @param argc 
+/// @param argv 
+/// @return 
 int main(int argc, char *argv[])
 /**
  * @brief Сборка всей логики
