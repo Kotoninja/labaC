@@ -135,12 +135,28 @@ void convertToPostfix(char infix[], char postfix[])
     for (int i = 0; i < lenInfix; i++)
     {
         char symbol = infix[i];
-        switch (symbol)
+
+        if (symbol == ')')
         {
-        case '!':
-        case '^':
-        case '&':
-        case '|':
+            while (!isEmpty(stack))
+            {
+                char topValue = stackTop(stack);
+                if (topValue == '(')
+                {
+                    pop(&stack);
+                }
+                postfix[indexPostfix++] = pop(&stack);
+            }
+        }
+        else if (symbol == '(')
+        {
+            push(&stack, symbol);
+        }
+        else if (!isOperator(symbol))
+        {
+            postfix[indexPostfix++] = symbol;
+        }
+        else
         {
             while (!isEmpty(stack))
             {
@@ -170,25 +186,6 @@ void convertToPostfix(char infix[], char postfix[])
                 }
             }
             push(&stack, symbol);
-            break;
-        }
-        case ')':
-            while (!isEmpty(stack))
-            {
-                char topValue = stackTop(stack);
-                if (topValue == '(')
-                {
-                    pop(&stack);
-                    break;
-                }
-                postfix[indexPostfix++] = pop(&stack);
-            }
-            break;
-        case '(':
-            push(&stack, symbol);
-            break;
-        default:
-            postfix[indexPostfix++] = symbol;
         }
     }
 
@@ -267,7 +264,6 @@ int main(int argc, char *argv[])
     char postfix[len];
 
     convertToPostfix(infix, postfix);
-
     int countOfOperation = 1 << countOfVariables;
 
     for (int i = 0; i < countOfVariables; i++)
