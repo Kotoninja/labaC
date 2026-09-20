@@ -33,7 +33,7 @@ int pop(StackNodePtr *top)
 
 void printStack(StackNodePtr top)
 {
-    printf("[");
+    // printf("[");
     while (top)
     {
         StackNodePtr next = (top)->nextPtr;
@@ -45,7 +45,7 @@ void printStack(StackNodePtr top)
 
         top = next;
     }
-    printf("]\n");
+    // printf("]\n");
 }
 
 int isEmpty(StackNodePtr top)
