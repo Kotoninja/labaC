@@ -4,7 +4,8 @@
 #include "stack.h"
 #include <string.h>
 #include "bin.h"
-
+#include "hashmap.h"
+#include <stddef.h>
 /*
 Как делаем:
 1. Парсим флаг с указанием файла с stdin
@@ -65,52 +66,52 @@ int calculate(int op1, int op2, char operator)
     }
 }
 
-void calculateExperssion(char postfix[], StackNodePtr table)
-{
+// void calculateExperssion(char postfix[], StackNodePtr table)
+// {
 
-    int n = strlen(postfix);
-    StackNodePtr stack = NULL;
-    char answer[MAX_SIZE];
-    int answerIndex = 0;
+//     int n = strlen(postfix);
+//     StackNodePtr stack = NULL;
+//     char answer[MAX_SIZE];
+//     int answerIndex = 0;
 
-    for (int i = 0; i < n; i++)
-    {
-        char symbol = postfix[i];
+//     for (int i = 0; i < n; i++)
+//     {
+//         char symbol = postfix[i];
 
-        if (!isOperator(symbol))
-        {
-            int digit = pop(&table);
-            answerIndex += sprintf(answer + answerIndex, "%d ", digit);
-            printf("symbol - %c; digit - %d \n", symbol, digit);
-            push(&stack, digit);
-            continue;
-        }
-        else if (symbol == '!' && lenStack(stack) >= 1)
-        {
-            int value = pop(&stack);
-            int calculation = calculate(value, 0, '!');
-            push(&stack, calculation);
-        }
-        // else if (isOperator(symbol) && lenStack(stack) < 2)
-        // {
-        //     printf("STACK LT 2");
-        //     break;
-        // }
-        else
-        {
-            int right = pop(&stack);
-            int left = pop(&stack);
-            int calculation = calculate(left, right, symbol);
-            push(&stack, calculation);
-        }
-    }
+//         if (!isOperator(symbol))
+//         {
+//             int digit = pop(&table);
+//             answerIndex += sprintf(answer + answerIndex, "%d ", digit);
+//             printf("symbol - %c; digit - %d \n", symbol, digit);
+//             push(&stack, digit);
+//             continue;
+//         }
+//         else if (symbol == '!' && lenStack(stack) >= 1)
+//         {
+//             int value = pop(&stack);
+//             int calculation = calculate(value, 0, '!');
+//             push(&stack, calculation);
+//         }
+//         // else if (isOperator(symbol) && lenStack(stack) < 2)
+//         // {
+//         //     printf("STACK LT 2");
+//         //     break;
+//         // }
+//         else
+//         {
+//             int right = pop(&stack);
+//             int left = pop(&stack);
+//             int calculation = calculate(left, right, symbol);
+//             push(&stack, calculation);
+//         }
+//     }
 
-    // if (lenStack(stack) != 1)
-    // {
-    //     printf("len stack not equal 1");
-    // }
-    printf("%s %d", answer, pop(&stack));
-}
+//     // if (lenStack(stack) != 1)
+//     // {
+//     //     printf("len stack not equal 1");
+//     // }
+//     printf("%s %d", answer, pop(&stack));
+// }
 
 /// @brief Конвертирет инфиксное выражение из infix в посфиксное и записывает его в postfix
 /// @param infix
@@ -216,7 +217,9 @@ int main(int argc, char *argv[])
     char infix[MAX_SIZE];
     int len = 0;
     int symbol;
+    char variables[MAX_SIZE];
     int countOfVariables;
+    hash_map_t *frequency = hash_map_create(1);
 
     while ((symbol = getc(fp)) != EOF && len < MAX_SIZE - 1)
     {
@@ -237,46 +240,43 @@ int main(int argc, char *argv[])
             }
             default:
             {
-                countOfVariables++;
+                if (!hash_map_key(frequency, (char[]){symbol, '\0'}))
+                {
+                    variables[countOfVariables++] = symbol;
+                    frequency = hash_map_insert(frequency, (char[]){symbol, '\0'}, 0);
+                }
             }
             }
         }
     }
     infix[len] = '\0';
-
+    variables[countOfVariables] = '\0';
+    hash_map_free(frequency);
     fclose(fp);
 
     // Создаем массив для постфиксного выражения
     char postfix[len];
 
-    // for (int i = 0; i < len; i++)
-    // {
-    //     printf("%c", infix[i]);
-    // }
-
     convertToPostfix(infix, postfix);
-    // for (int i = 0; i < len; i++)
-    // {
-    //     printf("%c ", postfix[i]);
-    // }
 
-    // printList(variables);
-
-    // printf("%d\n", len(variables));
-
-    int countOfOperation = 1 << countOfVariables; // 16
-    // printf("infix - %s\n", infix);
-    printf("infix - %s\n", postfix);
-    printf("a b c d Answer\n");
+    int countOfOperation = 1 << countOfVariables;
 
     for (int i = 0; i < countOfOperation; i++)
     {
         StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
-        // printStack(stackBinNumber);
-        calculateExperssion(postfix, stackBinNumber);
+        hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
+
+        for (int i = 0; i < countOfVariables; i++)
+        {   
+            hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i],'\0'}, pop(&stackBinNumber));
+        }
+    
+        printf("a - %d ", hash_map_get(hashmapVariables, "a"));
+        printf("b - %d ", hash_map_get(hashmapVariables, "b"));
+        printf("c - %d", hash_map_get(hashmapVariables, "c"));
+
+        // calculateExperssion(postfix, stackBinNumber);
         printf("\n");
-        // break;
-        // printf("bin %d\n", binNumber);
     }
 
     printf("\n");
