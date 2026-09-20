@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-typedef struct _hash_map_cell
+typedef struct _hash_map_cell_t
 {
     char *key;
     int value;
@@ -69,19 +69,21 @@ hash_map_t *hash_map_insert(hash_map_t *map, char *key, int value)
 
     size_t index = hash(key) % map->size;
 
-    while (map->entries[index].key != NULL)
+    while (map->entries[index].key != NULL) // if hash func return identical values
     {
         index++;
 
         if (index == map->size)
         {
-            return hash_map_insert(hash_map_expand(map), key, value);
+            return hash_map_insert(hash_map_expand(map), key, value); // expand hashMap if there is no space left
         }
     }
 
     map->entries[index].key = calloc(strlen(key) + 1, sizeof(char));
-    assert(map->entries != NULL);
     map->entries[index].value = value;
+    assert(map->entries[index].key != NULL);
+
+    strcpy(map->entries[index].key, key);
 
     return map;
 }
@@ -91,9 +93,9 @@ bool hash_map_key(hash_map_t *map, char *key)
     assert(map != NULL);
     assert(key != NULL);
 
-    for (size_t index = hash(key) % map->size; index < map->entries; index++)
+    for (size_t index = hash(key) % map->size; index < map->size; index++)
     {
-        char current = map->entries[index].key;
+        char *current = map->entries[index].key;
 
         if (current == NULL)
             continue;
@@ -111,17 +113,19 @@ int hash_map_get(hash_map_t *map, char *key)
 {
     assert(map != NULL);
     assert(key != NULL);
-    assert(_hash_map_key(map, key));
+    assert(hash_map_key(map, key));
 
     for (size_t index = hash(key) % map->size; index < map->size; index++)
     {
-        char current = map->entries[index].key;
+        char *current = map->entries[index].key;
 
         if (current == NULL)
             continue;
         else
             return map->entries[index].value;
     }
+
+    return -1;
 }
 
 void hash_map_free(hash_map_t *map)
