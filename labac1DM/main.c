@@ -22,6 +22,7 @@
 ^ - сложение по модулю 2
 @ - эквивалентность
 * - импликация
+~ - коимпликация
 > - стрелка Пирса
 < - штрих Шеффера
 */
@@ -36,17 +37,22 @@ int Priority(char symbol)
     switch (symbol)
     {
     case '!':
-        return 4;
+        return 7;
     case '&':
-        return 3;
+        return 6;
     case '|':
-        return 2;
     case '^':
+        return 5;
+    case '<':
+    case '>':
+        return 4;
+    case '*':
+    case '~':
+        return 2;
+    case '@':
         return 1;
-    case '(':
-        return 0;
     default:
-        return -1;
+        return 0;
     }
 }
 
