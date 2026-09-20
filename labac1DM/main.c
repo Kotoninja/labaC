@@ -61,7 +61,7 @@ int calculate(int op1, int op2, char operator)
     case '|':
         return op1 || op2;
     case '^':
-        return (!op1 || op2) && (op1 && !op2);
+        return (!op1 && op2) || (op1 && !op2);
     default:
         return -1;
     }
@@ -94,11 +94,6 @@ int calculateExperssion(char postfix[], hash_map_t *hashMap)
             int calculation = calculate(value, 0, '!');
             push(&stack, calculation);
         }
-        // else if (isOperator(symbol) && lenStack(stack) < 2)
-        // {
-        //     printf("STACK LT 2");
-        //     break;
-        // }
         else
         {
             int right = pop(&stack);
@@ -108,7 +103,7 @@ int calculateExperssion(char postfix[], hash_map_t *hashMap)
         }
     }
 
-    assert(lenStack(stack) != 1);
+    assert(lenStack(stack) == 1);
     return pop(&stack);
 }
 
