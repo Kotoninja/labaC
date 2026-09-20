@@ -12,13 +12,17 @@ void push(StackNodePtr *top, int value)
         newPtr->nextPtr = *top;
         *top = newPtr;
     }
+    else
+    {
+        printf("newPtr is NULL");
+    }
 }
 
 int pop(StackNodePtr *top)
 {
     if (*top == NULL)
     {
-        return -1;
+        return 0;
     }
     StackNodePtr CurrPtr = *top;
     int value = CurrPtr->data;
@@ -29,7 +33,7 @@ int pop(StackNodePtr *top)
 
 void printStack(StackNodePtr top)
 {
-    printf("[");
+    // printf("[");
     while (top)
     {
         StackNodePtr next = (top)->nextPtr;
@@ -41,12 +45,23 @@ void printStack(StackNodePtr top)
 
         top = next;
     }
-    printf("]\n");
+    // printf("]\n");
 }
 
 int isEmpty(StackNodePtr top)
 {
     return top == NULL;
+}
+
+int lenStack(StackNodePtr top)
+{
+    int n = 0;
+    while (top)
+    {
+        n++;
+        top = top->nextPtr;
+    }
+    return n;
 }
 
 char stackTop(StackNodePtr topPtr)
@@ -61,12 +76,13 @@ char stackTop(StackNodePtr topPtr)
 
 // int main(void)
 // {
-//     StackNodePtr stack = NULL;
+// StackNodePtr stack = NULL;
 
-//     push(&stack, 10);
-//     push(&stack, 'a');
-//     printStack(stack);
-
+// push(&stack, 10);
+// push(&stack, 'a');
+// printStack(stack);
+// int n = lenStack(stack);
+// printf("%d", n);
 //     pop(&stack);
 //     printStack(stack);
 

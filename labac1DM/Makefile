@@ -3,7 +3,7 @@
 file ?= data.txt
 
 run:
-	clang main.c stack.c -o app
+	clang main.c stack.c bin.c hashmap.c list.c -o app
 	./app -file=$(file)
 
 list:
@@ -11,7 +11,7 @@ list:
 	./app
 
 bin: 
-	clang bin.c list.c -o app
+	clang bin.c stack.c -o app
 	./app
 
 stack:
