@@ -11,7 +11,7 @@ list:
 	./app
 
 bin: 
-	clang bin.c list.c -o app
+	clang bin.c stack.c -o app
 	./app
 
 stack:

@@ -18,12 +18,9 @@
 #define MAX_SIZE 1024
 
 /// @brief Возвращает приоритет логической операции
-/// @param symbol 
-/// @return 
+/// @param symbol
+/// @return
 int Priority(char symbol)
-/**
- * @brief Возвращает приоритет логической операции
- */
 {
     switch (symbol)
     {
@@ -42,13 +39,83 @@ int Priority(char symbol)
     }
 }
 
+int isOperator(char c)
+{
+    if (c >= 'a' && c <= 'z')
+    {
+        return 0;
+    }
+    return 1;
+}
+
+int calculate(int op1, int op2, char operator)
+{
+    switch (operator)
+    {
+    case '!':
+        return !op1;
+    case '&':
+        return op1 && op2;
+    case '|':
+        return op1 || op2;
+    case '^':
+        return (!op1 || op2) && (op1 && !op2);
+    default:
+        return -1;
+    }
+}
+
+void calculateExperssion(char postfix[], StackNodePtr table)
+{
+
+    int n = strlen(postfix);
+    StackNodePtr stack = NULL;
+    char answer[MAX_SIZE];
+    int answerIndex = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        char symbol = postfix[i];
+
+        if (!isOperator(symbol))
+        {
+            int digit = pop(&table);
+            answerIndex += sprintf(answer + answerIndex, "%d ", digit);
+            printf("symbol - %c; digit - %d \n", symbol, digit);
+            push(&stack, digit);
+            continue;
+        }
+        else if (symbol == '!' && lenStack(stack) >= 1)
+        {
+            int value = pop(&stack);
+            int calculation = calculate(value, 0, '!');
+            push(&stack, calculation);
+        }
+        // else if (isOperator(symbol) && lenStack(stack) < 2)
+        // {
+        //     printf("STACK LT 2");
+        //     break;
+        // }
+        else
+        {
+            int right = pop(&stack);
+            int left = pop(&stack);
+            int calculation = calculate(left, right, symbol);
+            push(&stack, calculation);
+        }
+    }
+
+    // if (lenStack(stack) != 1)
+    // {
+    //     printf("len stack not equal 1");
+    // }
+    printf("%s %d", answer, pop(&stack));
+}
+
 /// @brief Конвертирет инфиксное выражение из infix в посфиксное и записывает его в postfix
-/// @param infix 
-/// @param postfix 
+/// @param infix
+/// @param postfix
 void convertToPostfix(char infix[], char postfix[])
-/**
- * @brief Конвертирет инфиксное выражение из infix в посфиксное и записывает его в postfix
- */
 {
     int lenInfix = strlen(infix);
     StackNodePtr stack = NULL;
@@ -123,13 +190,10 @@ void convertToPostfix(char infix[], char postfix[])
 }
 
 /// @brief Сборка всей логики
-/// @param argc 
-/// @param argv 
-/// @return 
+/// @param argc
+/// @param argv
+/// @return
 int main(int argc, char *argv[])
-/**
- * @brief Сборка всей логики
- */
 {
     // Парсинг флага
     char *filename = NULL;
@@ -200,17 +264,19 @@ int main(int argc, char *argv[])
 
     // printf("%d\n", len(variables));
 
-    // int countOfOperation = pow(2, len(variables));
     int countOfOperation = 1 << countOfVariables; // 16
-    printf("countOfOperation - %d\n", countOfOperation);
+    // printf("infix - %s\n", infix);
+    printf("infix - %s\n", postfix);
+    printf("a b c d Answer\n");
+
     for (int i = 0; i < countOfOperation; i++)
     {
-
-        int binNumber = convertToBin(i);
-        printf("bin %d\n", binNumber);
-        // for (int bit = countOfVariables - 1; bit >= 0; bit--)
-        //     putchar('0' + ((i >> bit) & 1));
-        // putchar('\n');
+        StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
+        // printStack(stackBinNumber);
+        calculateExperssion(postfix, stackBinNumber);
+        printf("\n");
+        // break;
+        // printf("bin %d\n", binNumber);
     }
 
     printf("\n");
