@@ -7,6 +7,7 @@
 #include "hashmap.h"
 #include <stddef.h>
 #include <assert.h>
+#include <ctype.h>
 /*
 Как делаем:
 1. Парсим флаг с указанием файла с stdin
@@ -225,8 +226,9 @@ void convertToPostfix(char infix[], char postfix[])
 /// @brief Создает СДНФ
 /// @param variables
 /// @param postfix
-void generateSNF(char *variables, char *postfix, char mode)
+void generateSDNF(char *variables, char *postfix)
 {
+    printf("СДНФ: ");
     int countOfVariables = strlen(variables);
     int countOfOperation = 1 << countOfVariables;
 
@@ -263,26 +265,124 @@ void generateSNF(char *variables, char *postfix, char mode)
                 buffer[bufferIndex++] = '!';
                 buffer[bufferIndex++] = variabel;
             }
-            buffer[bufferIndex++] = (mode == '&' ? '&' : '|');
+            buffer[bufferIndex++] = '&';
         }
-        buffer[bufferIndex-1] = '\0';
+        buffer[bufferIndex - 1] = '\0';
 
         answer[answerIndex++] = '(';
         for (int i = 0; i < strlen(buffer); i++)
-        {   
+        {
             answer[answerIndex++] = buffer[i];
         }
         answer[answerIndex++] = ')';
-        
-        answer[answerIndex++] = (mode == '&' ? '|' : '&');
+
+        answer[answerIndex++] = '|';
     }
 
     answer[answerIndex - 1] = '\0';
 
     if (strlen(answer) == 0)
-        printf("Error snf\n");
+        printf("Error sdnf\n");
 
     printf("%s\n", answer);
+}
+
+/// @brief Создает СКНФ
+/// @param variables
+/// @param postfix
+void generateSKNF(char *variables, char *postfix)
+{
+    printf("СКНФ: ");
+    int countOfVariables = strlen(variables);
+    int countOfOperation = 1 << countOfVariables;
+
+    char answer[MAX_SIZE];
+    int answerIndex = 0;
+
+    for (int i = 0; i < countOfOperation; i++)
+    {
+        StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
+        hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
+        for (int i = 0; i < countOfVariables; i++)
+        {
+            hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
+        }
+
+        int result = calculateExperssion(postfix, hashmapVariables);
+
+        if (result != 0)
+            continue;
+
+        char buffer[MAX_SIZE];
+        int bufferIndex = 0;
+
+        int n = strlen(variables);
+        for (int i = 0; i < n; i++)
+        {
+            char variabel = variables[i];
+            if (hash_map_get(hashmapVariables, (char[]){variabel, '\0'}) == 0)
+            {
+                buffer[bufferIndex++] = variabel;
+            }
+            else
+            {
+                buffer[bufferIndex++] = '!';
+                buffer[bufferIndex++] = variabel;
+            }
+            buffer[bufferIndex++] = '|';
+        }
+        buffer[bufferIndex - 1] = '\0';
+
+        answer[answerIndex++] = '(';
+        for (int i = 0; i < strlen(buffer); i++)
+        {
+            answer[answerIndex++] = buffer[i];
+        }
+        answer[answerIndex++] = ')';
+
+        answer[answerIndex++] = '&';
+    }
+
+    answer[answerIndex - 1] = '\0';
+
+    if (strlen(answer) == 0)
+        printf("Error sknf\n");
+
+    printf("%s\n", answer);
+}
+
+/// @brief Строит таблицу истинности
+/// @param variables
+/// @param postfix
+void generateTable(char *variables, char *postfix)
+{
+    int n = strlen(variables);
+    for (int i = 0; i <= n - 1 + 7 - 11; i++)
+    {
+        printf(" ");
+    }
+    printf("Truth Table\n");
+    int countOfOperation = 1 << n; // Считаем количество операци в таблице истинности
+    // Формируем таблицу
+    for (int i = 0; i < n; i++)
+    {
+        printf("%c ", variables[i]);
+    }
+    printf("Answer\n");
+
+    for (int i = 0; i < countOfOperation; i++)
+    {
+        StackNodePtr stackBinNumber = convertToBin(i, n); // Создаем ряд чисел для переменных (типо 1 0 0 0 или 0 0 1 1)
+        // Присвиваем каждой переменной значение
+        hash_map_t *hashmapVariables = hash_map_create(n);
+        printStack(stackBinNumber);
+        for (int i = 0; i < n; i++)
+        {
+            hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
+        }
+        // Результат выражения
+        printf("   %d\n", calculateExperssion(postfix, hashmapVariables));
+    }
 }
 
 /// @brief Сборка всей логики
@@ -294,11 +394,10 @@ int main(int argc, char *argv[])
     // Парсинг флага
     char *filename = NULL;
 
-    // if (strncmp(argv[1], "-file", 5) == 0)
-    // {
-    // filename = strchr(argv[1], '=') + 1;
-    // }
-    filename = "data.txt";
+    if (strncmp(argv[1], "-file", 5) == 0)
+    {
+        filename = strchr(argv[1], '=') + 1;
+    }
     // Открытие файла для чтения
     FILE *fp = fopen(filename, "r");
 
@@ -318,7 +417,7 @@ int main(int argc, char *argv[])
 
     hash_map_t *frequency = hash_map_create(1); // Hashmap для подсчета частоты символов (чтобы не было повторок переменных)
 
-    while ((symbol = getc(fp)) != EOF && len < MAX_SIZE - 1)
+    while ((symbol = tolower(getc(fp))) != EOF && len < MAX_SIZE - 1)
     {
         if (symbol != ' ')
         {
@@ -344,32 +443,11 @@ int main(int argc, char *argv[])
     char postfix[len];
 
     convertToPostfix(infix, postfix);
-    int countOfOperation = 1 << countOfVariables; // Считаем количество операци в таблице истинности
 
-    // // Формируем таблицу
-    // for (int i = 0; i < countOfVariables; i++)
-    // {
-    //     printf("%c ", variables[i]);
-    // }
-    // printf("Answer\n");
+    generateTable(variables, postfix);     // Строим таблицу истинности
+    generateSDNF(variables, postfix); // Строим СДНФ
+    generateSKNF(variables, postfix); // Строим СКНФ
 
-    // for (int i = 0; i < countOfOperation; i++)
-    // {
-    //     StackNodePtr stackBinNumber = convertToBin(i, countOfVariables); // Создаем ряд чисел для переменных (типо 1 0 0 0 или 0 0 1 1)
-    //     // Присвиваем каждой переменной значение
-    //     hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
-    //     printStack(stackBinNumber);
-    //     for (int i = 0; i < countOfVariables; i++)
-    //     {
-    //         hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
-    //     }
-    //     // Результат выражения
-    //     printf("   %d\n", calculateExperssion(postfix, hashmapVariables));
-    // }
-
-    // printf("%s", variables);
-    generateSNF(variables, postfix, '&');
-    generateSNF(variables, postfix, '|');
     printf("\n");
     return 0;
 }
