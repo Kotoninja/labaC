@@ -225,7 +225,7 @@ void convertToPostfix(char infix[], char postfix[])
 /// @brief Создает СДНФ
 /// @param variables
 /// @param postfix
-void generateSDNF(char *variables, char *postfix)
+void generateSNF(char *variables, char *postfix, char mode)
 {
     int countOfVariables = strlen(variables);
     int countOfOperation = 1 << countOfVariables;
@@ -250,8 +250,6 @@ void generateSDNF(char *variables, char *postfix)
         char buffer[MAX_SIZE];
         int bufferIndex = 0;
 
-        buffer[bufferIndex++] = '(';
-
         int n = strlen(variables);
         for (int i = 0; i < n; i++)
         {
@@ -265,25 +263,26 @@ void generateSDNF(char *variables, char *postfix)
                 buffer[bufferIndex++] = '!';
                 buffer[bufferIndex++] = variabel;
             }
-            if (i < n - 1) // Чтобы не было последней операции
-                buffer[bufferIndex++] = '&';
+            buffer[bufferIndex++] = (mode == '&' ? '&' : '|');
         }
-        buffer[bufferIndex++] = ')';
+        buffer[bufferIndex-1] = '\0';
 
+        answer[answerIndex++] = '(';
         for (int i = 0; i < strlen(buffer); i++)
-        {
+        {   
             answer[answerIndex++] = buffer[i];
         }
-
-        answer[answerIndex++] = '|';
+        answer[answerIndex++] = ')';
+        
+        answer[answerIndex++] = (mode == '&' ? '|' : '&');
     }
 
     answer[answerIndex - 1] = '\0';
 
     if (strlen(answer) == 0)
-        printf("Error");
+        printf("Error snf\n");
 
-    printf("%s", answer);
+    printf("%s\n", answer);
 }
 
 /// @brief Сборка всей логики
@@ -369,7 +368,8 @@ int main(int argc, char *argv[])
     // }
 
     // printf("%s", variables);
-    generateSDNF(variables, postfix);
+    generateSNF(variables, postfix, '&');
+    generateSNF(variables, postfix, '|');
     printf("\n");
     return 0;
 }
