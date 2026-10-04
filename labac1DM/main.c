@@ -279,6 +279,12 @@ void generateSDNF(char *variables, char *postfix)
         answer[answerIndex++] = '|';
     }
 
+    if (answerIndex == 0)
+    {
+        printf("Не существует\n");
+        return;
+    }
+
     answer[answerIndex - 1] = '\0';
 
     if (strlen(answer) == 0)
@@ -343,6 +349,12 @@ void generateSKNF(char *variables, char *postfix)
         answer[answerIndex++] = '&';
     }
 
+    if (answerIndex == 0)
+    {
+        printf("Не существует\n");
+        return;
+    }
+
     answer[answerIndex - 1] = '\0';
 
     if (strlen(answer) == 0)
@@ -357,11 +369,11 @@ void generateSKNF(char *variables, char *postfix)
 void generateTable(char *variables, char *postfix)
 {
     int n = strlen(variables);
-    for (int i = 0; i <= n - 1 + 7 - 11; i++)
+    for (int i = 0; i <= n - 1 + 7 - 18; i++)
     {
         printf(" ");
     }
-    printf("Truth Table\n");
+    printf("Таблица истинности\n");
     int countOfOperation = 1 << n; // Считаем количество операци в таблице истинности
     // Формируем таблицу
     for (int i = 0; i < n; i++)
@@ -413,7 +425,7 @@ int main(int argc, char *argv[])
     int symbol; // Вспомогательная переменная для чтения файла
 
     char variables[MAX_SIZE]; // Строка, где хранятся все переменные
-    int countOfVariables;
+    int countOfVariables = 0;
 
     hash_map_t *frequency = hash_map_create(1); // Hashmap для подсчета частоты символов (чтобы не было повторок переменных)
 
@@ -444,9 +456,9 @@ int main(int argc, char *argv[])
 
     convertToPostfix(infix, postfix);
 
-    generateTable(variables, postfix);     // Строим таблицу истинности
-    generateSDNF(variables, postfix); // Строим СДНФ
-    generateSKNF(variables, postfix); // Строим СКНФ
+    generateTable(variables, postfix); // Строим таблицу истинности
+    generateSDNF(variables, postfix);  // Строим СДНФ
+    generateSKNF(variables, postfix);  // Строим СКНФ
 
     printf("\n");
     return 0;
