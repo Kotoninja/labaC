@@ -103,6 +103,22 @@ int calculate(int op1, int op2, char operator)
     }
 }
 
+/// @brief Создает словарь с переменными и их значениями (0,1)
+/// @param stackBinNumber
+/// @param variables
+/// @return
+hash_map_t *generateCase(StackNodePtr stackBinNumber, char *variables)
+{
+    int countOfVariables = strlen(variables);
+    hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
+    for (int i = 0; i < countOfVariables; i++)
+    {
+        hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
+    }
+
+    return hashmapVariables;
+}
+
 /// @brief Высчитывает логическое выражение
 /// @param postfix
 /// @param hashMap
@@ -355,26 +371,10 @@ void generateSKNF(char *variables, char *postfix)
     printf("%s\n", answer);
 }
 
-/// @brief Создает словарь с переменными и их значениями (0,1)
-/// @param stackBinNumber
-/// @param variables
-/// @return
-hash_map_t *generateCase(StackNodePtr stackBinNumber, char *variables)
-{
-    int countOfVariables = strlen(variables);
-    hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
-    for (int i = 0; i < countOfVariables; i++)
-    {
-        hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
-    }
-
-    return hashmapVariables;
-}
-
 /// @brief Строит таблицу истинности
 /// @param variables
 /// @param postfix
-void generateTable(char *variables, char *postfix)
+void generateTable(char *variables, char *results)
 {
     int n = strlen(variables);
     for (int i = 0; i <= n - 1 + 7 - 18; i++)
@@ -394,11 +394,31 @@ void generateTable(char *variables, char *postfix)
     {
         StackNodePtr stackBinNumber = convertToBin(i, n); // Создаем ряд чисел для переменных (типо 1 0 0 0 или 0 0 1 1)
         printStack(stackBinNumber);
-        // Присвиваем каждой переменной значение
-        hash_map_t *hashmapVariables = generateCase(stackBinNumber, variables);
         // Результат выражения
-        printf("   %d\n", calculateExperssion(postfix, hashmapVariables));
+        printf("   %c\n", results[i]);
     }
+}
+
+/// @brief Генерирует все ответы для кадого случая бинарного выражения 
+/// @param variables abcd
+/// @param postfix abc||
+/// @return 10101010
+char *generateResults(char *variables, char *postfix)
+{
+    int n = strlen(variables);
+
+    static char answer[MAX_SIZE];
+    int answerIndex = 0;
+
+    for (int i = 0; i < 1 << n; i++)
+    {
+        hash_map_t *hashmapVariables = generateCase(convertToBin(i, n), variables);
+        int result = calculateExperssion(postfix, hashmapVariables);
+        answer[answerIndex++] = result ? '1' : '0';
+    }
+
+    answer[answerIndex] = '\0';
+    return answer;
 }
 
 /// @brief Сборка всей логики
@@ -460,7 +480,9 @@ int main(int argc, char *argv[])
 
     convertToPostfix(infix, postfix);
 
-    generateTable(variables, postfix); // Строим таблицу истинности
+    char *results = generateResults(variables, postfix);
+
+    generateTable(variables, results); // Строим таблицу истинности
     generateSDNF(variables, postfix);  // Строим СДНФ
     generateSKNF(variables, postfix);  // Строим СКНФ
 
