@@ -308,10 +308,11 @@ void generateSDNF(char *variables, char *postfix)
 /// @brief Создает СКНФ
 /// @param variables
 /// @param postfix
-void generateSKNF(char *variables, char *postfix)
+void generateSKNF(char *variables, char *results)
 {
+    int n = strlen(variables);
     printf("СКНФ: ");
-    int countOfVariables = strlen(variables);
+    int countOfVariables = n;
     int countOfOperation = 1 << countOfVariables;
 
     char answer[MAX_SIZE];
@@ -319,12 +320,10 @@ void generateSKNF(char *variables, char *postfix)
 
     for (int i = 0; i < countOfOperation; i++)
     {
-        StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
-        hash_map_t *hashmapVariables = generateCase(stackBinNumber, variables);
+        hash_map_t *hashmapVariables = generateCase(convertToBin(i, n), variables);
+        int result = results[i];
 
-        int result = calculateExperssion(postfix, hashmapVariables);
-
-        if (result != 0)
+        if (result != '0')
             continue;
 
         char buffer[MAX_SIZE];
@@ -399,7 +398,7 @@ void generateTable(char *variables, char *results)
     }
 }
 
-/// @brief Генерирует все ответы для кадого случая бинарного выражения 
+/// @brief Генерирует все ответы для кадого случая бинарного выражения
 /// @param variables abcd
 /// @param postfix abc||
 /// @return 10101010
@@ -482,9 +481,9 @@ int main(int argc, char *argv[])
 
     char *results = generateResults(variables, postfix);
 
-    generateTable(variables, results); // Строим таблицу истинности
-    generateSDNF(variables, postfix);  // Строим СДНФ
-    generateSKNF(variables, postfix);  // Строим СКНФ
+    // generateTable(variables, results); // Строим таблицу истинности
+    // generateSDNF(variables, postfix);  // Строим СДНФ
+    generateSKNF(variables, results); // Строим СКНФ
 
     printf("\n");
     return 0;
