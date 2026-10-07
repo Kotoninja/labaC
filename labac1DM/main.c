@@ -238,11 +238,7 @@ void generateSDNF(char *variables, char *postfix)
     for (int i = 0; i < countOfOperation; i++)
     {
         StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
-        hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
-        for (int i = 0; i < countOfVariables; i++)
-        {
-            hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
-        }
+        hash_map_t *hashmapVariables = generateCase(stackBinNumber, variables);
 
         int result = calculateExperssion(postfix, hashmapVariables);
 
@@ -308,11 +304,7 @@ void generateSKNF(char *variables, char *postfix)
     for (int i = 0; i < countOfOperation; i++)
     {
         StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
-        hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
-        for (int i = 0; i < countOfVariables; i++)
-        {
-            hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
-        }
+        hash_map_t *hashmapVariables = generateCase(stackBinNumber, variables);
 
         int result = calculateExperssion(postfix, hashmapVariables);
 
@@ -363,6 +355,22 @@ void generateSKNF(char *variables, char *postfix)
     printf("%s\n", answer);
 }
 
+/// @brief Создает словарь с переменными и их значениями (0,1)
+/// @param stackBinNumber
+/// @param variables
+/// @return
+hash_map_t *generateCase(StackNodePtr stackBinNumber, char *variables)
+{
+    int countOfVariables = strlen(variables);
+    hash_map_t *hashmapVariables = hash_map_create(countOfVariables);
+    for (int i = 0; i < countOfVariables; i++)
+    {
+        hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
+    }
+
+    return hashmapVariables;
+}
+
 /// @brief Строит таблицу истинности
 /// @param variables
 /// @param postfix
@@ -385,13 +393,9 @@ void generateTable(char *variables, char *postfix)
     for (int i = 0; i < countOfOperation; i++)
     {
         StackNodePtr stackBinNumber = convertToBin(i, n); // Создаем ряд чисел для переменных (типо 1 0 0 0 или 0 0 1 1)
-        // Присвиваем каждой переменной значение
-        hash_map_t *hashmapVariables = hash_map_create(n);
         printStack(stackBinNumber);
-        for (int i = 0; i < n; i++)
-        {
-            hashmapVariables = hash_map_insert(hashmapVariables, (char[]){variables[i], '\0'}, pop(&stackBinNumber));
-        }
+        // Присвиваем каждой переменной значение
+        hash_map_t *hashmapVariables = generateCase(stackBinNumber, variables);
         // Результат выражения
         printf("   %d\n", calculateExperssion(postfix, hashmapVariables));
     }
