@@ -242,7 +242,7 @@ void convertToPostfix(char infix[], char postfix[])
 /// @brief Создает СДНФ
 /// @param variables
 /// @param postfix
-void generateSDNF(char *variables, char *postfix)
+void generateSDNF(char *variables, char *results)
 {
     printf("СДНФ: ");
     int countOfVariables = strlen(variables);
@@ -256,9 +256,9 @@ void generateSDNF(char *variables, char *postfix)
         StackNodePtr stackBinNumber = convertToBin(i, countOfVariables);
         hash_map_t *hashmapVariables = generateCase(stackBinNumber, variables);
 
-        int result = calculateExperssion(postfix, hashmapVariables);
+        int result = results[i];
 
-        if (result != 1)
+        if (result != '1')
             continue;
 
         char buffer[MAX_SIZE];
@@ -481,8 +481,8 @@ int main(int argc, char *argv[])
 
     char *results = generateResults(variables, postfix);
 
-    // generateTable(variables, results); // Строим таблицу истинности
-    // generateSDNF(variables, postfix);  // Строим СДНФ
+    generateTable(variables, results); // Строим таблицу истинности
+    generateSDNF(variables, results);  // Строим СДНФ
     generateSKNF(variables, results); // Строим СКНФ
 
     printf("\n");
