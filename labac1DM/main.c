@@ -420,6 +420,51 @@ char *generateResults(char *variables, char *postfix)
     return answer;
 }
 
+void generateFictitious(char *variables, char *results, char *postfix)
+{
+
+    int n = strlen(variables);
+
+    static char answer[MAX_SIZE];
+    int answerIndex = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        char variable = variables[i];
+        char key[2] = {variable, '\0'};
+
+        int count = 0;
+        for (int j = 0; j < 1 << n; j++)
+        {
+            // printf("%c - %d\n", variable, j);
+            char firstResult = results[j];
+
+            hash_map_t *hashmapNumbers = generateCase(convertToBin(j, n), variables);
+
+            int switchNumber = hash_map_get(hashmapNumbers, key);
+
+            hashmapNumbers = hash_map_insert(hashmapNumbers, key, !switchNumber);
+
+            int secondResult = calculateExperssion(postfix, hashmapNumbers);
+
+            // printf("%c %d\n", variable, (firstResult != ('0' + secondResult)));
+            // printf("%c : %c -  %d\n", variable, firstResult, secondResult);
+            if (firstResult == ('0' + secondResult))
+            {
+                count = 1;
+                break;
+            };
+        }
+        if (count)
+        {
+            answer[answerIndex++] = variable;
+        }
+    }
+    answer[answerIndex] = '\0';
+
+    printf("Фиктивные переменные - %s\n", answer);
+}
+
 /// @brief Сборка всей логики
 /// @param argc
 /// @param argv
@@ -428,11 +473,12 @@ int main(int argc, char *argv[])
 {
     // Парсинг флага
     char *filename = NULL;
+    filename = "data.txt";
 
-    if (strncmp(argv[1], "-file", 5) == 0)
-    {
-        filename = strchr(argv[1], '=') + 1;
-    }
+    // if (strncmp(argv[1], "-file", 5) == 0)
+    // {
+    //     filename = strchr(argv[1], '=') + 1;
+    // }
     // Открытие файла для чтения
     FILE *fp = fopen(filename, "r");
 
@@ -481,10 +527,10 @@ int main(int argc, char *argv[])
 
     char *results = generateResults(variables, postfix);
 
-    generateTable(variables, results); // Строим таблицу истинности
-    generateSDNF(variables, results);  // Строим СДНФ
-    generateSKNF(variables, results); // Строим СКНФ
-
+    generateTable(variables, results);               // Строим таблицу истинности
+    generateSDNF(variables, results);                // Строим СДНФ
+    generateSKNF(variables, results);                // Строим СКНФ
+    generateFictitious(variables, results, postfix); // Узнаем, какие переменные фиктивны
     printf("\n");
     return 0;
 }
