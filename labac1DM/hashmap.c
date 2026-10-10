@@ -71,12 +71,17 @@ hash_map_t *hash_map_insert(hash_map_t *map, char *key, int value)
 
     while (map->entries[index].key != NULL) // if hash func return identical values
     {
-        index++;
-
         if (index == map->size)
         {
             return hash_map_insert(hash_map_expand(map), key, value); // expand hashMap if there is no space left
         }
+
+        if (!strcmp(map->entries[index].key, key))
+        {
+            map->entries[index].value = value;
+            return map;
+        }
+        index++;
     }
 
     map->entries[index].key = calloc(strlen(key) + 1, sizeof(char));
