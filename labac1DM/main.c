@@ -415,7 +415,7 @@ void generateFictitious(char *variables, char *results, char *postfix)
         char variable = variables[i];
         char key[2] = {variable, '\0'};
 
-        int count = 0;
+        int isFictitious = 1;
         for (int j = 0; j < 1 << n; j++)
         {
             char firstResult = results[j];
@@ -428,20 +428,28 @@ void generateFictitious(char *variables, char *results, char *postfix)
 
             int secondResult = calculateExperssion(postfix, hashmapNumbers);
 
-            if (firstResult == ('0' + secondResult))
+            if (firstResult != ('0' + secondResult))
             {
-                count = 1;
+                isFictitious = 0;
                 break;
             };
         }
-        if (count)
+        if (isFictitious)
         {
             answer[answerIndex++] = variable;
         }
     }
     answer[answerIndex] = '\0';
 
-    printf("Фиктивные переменные - %s\n", answer);
+    if (answerIndex == 0)
+    {
+        printf("Фиктивных переменных нет");
+    }
+    else
+    {
+        printf("Фиктивные переменные - %s", answer);
+    }
+    printf("\n");
 }
 
 /// @brief Сборка всей логики
@@ -453,10 +461,11 @@ int main(int argc, char *argv[])
     // Парсинг флага
     char *filename = NULL;
 
-    if (strncmp(argv[1], "-file", 5) == 0)
-    {
-        filename = strchr(argv[1], '=') + 1;
-    }
+    filename = "data.txt";
+    // if (strncmp(argv[1], "-file", 5) == 0)
+    // {
+    //     filename = strchr(argv[1], '=') + 1;
+    // }
     // Открытие файла для чтения
     FILE *fp = fopen(filename, "r");
 
