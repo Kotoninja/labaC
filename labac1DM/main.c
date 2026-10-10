@@ -8,15 +8,6 @@
 #include <stddef.h>
 #include <assert.h>
 #include <ctype.h>
-/*
-Как делаем:
-1. Парсим флаг с указанием файла с stdin
-2. Открываем файл и читаем данны в массив char (инфиксная запись)
-    1. Отдельно считаем количество переменных в выражении (n)
-3. Конвертируем инфиксную запись в постфиксную
-4. Создаем цикл с 2^n итерациями (для построения таблицы истинности). Переводим i-ую итерацию в двоичное число, каждый элемент которого будет в стеке
-5. В i-ой итерации передаем hashmap(с переменными и элементами двочиного числа) и выражение в функцию convertToPostfix и выводим результат
-*/
 
 /* Операции
 ! - инверсия
@@ -34,7 +25,7 @@
 
 /// @brief Возвращает приоритет логической операции
 /// @param symbol
-/// @return
+/// @return symbol
 int Priority(char symbol)
 {
     switch (symbol)
@@ -61,7 +52,7 @@ int Priority(char symbol)
 
 /// @brief Возвращает является ли c оператором
 /// @param c
-/// @return
+/// @return 0 or 1
 int isOperator(char c)
 {
     if (c >= 'a' && c <= 'z')
@@ -75,7 +66,7 @@ int isOperator(char c)
 /// @param op1
 /// @param op2
 /// @param operator
-/// @return
+/// @return 0 or 1, if unknow method: -1
 int calculate(int op1, int op2, char operator)
 {
     switch (operator)
@@ -106,7 +97,7 @@ int calculate(int op1, int op2, char operator)
 /// @brief Создает словарь с переменными и их значениями (0,1)
 /// @param stackBinNumber
 /// @param variables
-/// @return
+/// @return variables = "abc" : {"a" : 0, "b" : 0, "c" : 0}
 hash_map_t *generateCase(StackNodePtr stackBinNumber, char *variables)
 {
     int countOfVariables = strlen(variables);
@@ -122,16 +113,13 @@ hash_map_t *generateCase(StackNodePtr stackBinNumber, char *variables)
 /// @brief Высчитывает логическое выражение
 /// @param postfix
 /// @param hashMap
-/// @return
+/// @return 0 or 1
 int calculateExperssion(char postfix[], hash_map_t *hashMap)
 {
     assert(hashMap != NULL);
 
     int n = strlen(postfix);
     StackNodePtr stack = NULL;
-
-    // char answer[MAX_SIZE];
-    // int answerIndex = 0;
 
     for (int i = 0; i < n; i++)
     {
@@ -140,7 +128,6 @@ int calculateExperssion(char postfix[], hash_map_t *hashMap)
         if (!isOperator(symbol))
         {
             int digit = hash_map_get(hashMap, (char[]){symbol, '\0'});
-            // printf("symbol - %c; digit - %d \n", symbol, digit);
             push(&stack, digit);
             continue;
         }
@@ -244,8 +231,9 @@ void convertToPostfix(char infix[], char postfix[])
 /// @param postfix
 void generateSDNF(char *variables, char *results)
 {
+    int n = strlen(variables);
     printf("СДНФ: ");
-    int countOfVariables = strlen(variables);
+    int countOfVariables = n;
     int countOfOperation = 1 << countOfVariables;
 
     char answer[MAX_SIZE];
@@ -264,7 +252,6 @@ void generateSDNF(char *variables, char *results)
         char buffer[MAX_SIZE];
         int bufferIndex = 0;
 
-        int n = strlen(variables);
         for (int i = 0; i < n; i++)
         {
             char variabel = variables[i];
@@ -298,10 +285,6 @@ void generateSDNF(char *variables, char *results)
     }
 
     answer[answerIndex - 1] = '\0';
-
-    if (strlen(answer) == 0)
-        printf("Error sdnf\n");
-
     printf("%s\n", answer);
 }
 
@@ -329,7 +312,6 @@ void generateSKNF(char *variables, char *results)
         char buffer[MAX_SIZE];
         int bufferIndex = 0;
 
-        int n = strlen(variables);
         for (int i = 0; i < n; i++)
         {
             char variabel = variables[i];
@@ -363,10 +345,6 @@ void generateSKNF(char *variables, char *results)
     }
 
     answer[answerIndex - 1] = '\0';
-
-    if (strlen(answer) == 0)
-        printf("Error sknf\n");
-
     printf("%s\n", answer);
 }
 
@@ -420,12 +398,16 @@ char *generateResults(char *variables, char *postfix)
     return answer;
 }
 
+/// @brief Выводит, какие переменные являются фиктивными
+/// @param variables
+/// @param results
+/// @param postfix
 void generateFictitious(char *variables, char *results, char *postfix)
 {
 
     int n = strlen(variables);
 
-    static char answer[MAX_SIZE];
+    char answer[MAX_SIZE];
     int answerIndex = 0;
 
     for (int i = 0; i < n; i++)
@@ -436,19 +418,16 @@ void generateFictitious(char *variables, char *results, char *postfix)
         int count = 0;
         for (int j = 0; j < 1 << n; j++)
         {
-            // printf("%c - %d\n", variable, j);
             char firstResult = results[j];
 
             hash_map_t *hashmapNumbers = generateCase(convertToBin(j, n), variables);
 
             int switchNumber = hash_map_get(hashmapNumbers, key);
 
-            hashmapNumbers = hash_map_insert(hashmapNumbers, key, !switchNumber);
+            hashmapNumbers = hash_map_insert(hashmapNumbers, key, !switchNumber); // Меняем значение переменной на обратное
 
             int secondResult = calculateExperssion(postfix, hashmapNumbers);
 
-            // printf("%c %d\n", variable, (firstResult != ('0' + secondResult)));
-            // printf("%c : %c -  %d\n", variable, firstResult, secondResult);
             if (firstResult == ('0' + secondResult))
             {
                 count = 1;
@@ -468,7 +447,7 @@ void generateFictitious(char *variables, char *results, char *postfix)
 /// @brief Сборка всей логики
 /// @param argc
 /// @param argv
-/// @return
+/// @return Возращает все ответы
 int main(int argc, char *argv[])
 {
     // Парсинг флага
@@ -493,7 +472,7 @@ int main(int argc, char *argv[])
     int symbol; // Вспомогательная переменная для чтения файла
 
     char variables[MAX_SIZE]; // Строка, где хранятся все переменные
-    int countOfVariables = 0;
+    int variablesIndex = 0;
 
     hash_map_t *frequency = hash_map_create(1); // Hashmap для подсчета частоты символов (чтобы не было повторок переменных)
 
@@ -507,7 +486,7 @@ int main(int argc, char *argv[])
             {
                 if (!hash_map_key(frequency, (char[]){symbol, '\0'})) // Если есть повторка - скипаем
                 {
-                    variables[countOfVariables++] = symbol;
+                    variables[variablesIndex++] = symbol;
                     frequency = hash_map_insert(frequency, (char[]){symbol, '\0'}, 0);
                 }
             }
@@ -515,7 +494,7 @@ int main(int argc, char *argv[])
     }
 
     infix[len] = '\0';
-    variables[countOfVariables] = '\0';
+    variables[variablesIndex] = '\0';
     hash_map_free(frequency);
     fclose(fp);
 
