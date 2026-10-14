@@ -461,11 +461,11 @@ int main(int argc, char *argv[])
     // Парсинг флага
     char *filename = NULL;
 
-    filename = "data.txt";
-    // if (strncmp(argv[1], "-file", 5) == 0)
-    // {
-    //     filename = strchr(argv[1], '=') + 1;
-    // }
+    if (strncmp(argv[1], "-file", 5) == 0)
+    {
+        filename = strchr(argv[1], '=') + 1;
+    }
+
     // Открытие файла для чтения
     FILE *fp = fopen(filename, "r");
 
