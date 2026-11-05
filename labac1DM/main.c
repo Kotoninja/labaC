@@ -376,7 +376,7 @@ void generateTable(char *variables, char *results)
     }
 }
 
-/// @brief Генерирует все ответы для кадого случая бинарного выражения
+/// @brief Генерирует все ответы для каждого случая бинарного выражения
 /// @param variables abcd
 /// @param postfix abc||
 /// @return 10101010
@@ -384,7 +384,7 @@ char *generateResults(char *variables, char *postfix)
 {
     int n = strlen(variables);
 
-    static char answer[MAX_SIZE];
+    static char answer[MAX_SIZE]; // нерентерабельность
     int answerIndex = 0;
 
     for (int i = 0; i < 1 << n; i++)
@@ -443,7 +443,7 @@ void generateFictitious(char *variables, char *results, char *postfix)
 
     if (answerIndex == 0)
     {
-        printf("Фиктивных переменных нет");
+        printf("Фиктивных переменных - нет");
     }
     else
     {
@@ -508,7 +508,7 @@ int main(int argc, char *argv[])
     fclose(fp);
 
     // Создаем массив для постфиксного выражения
-    char postfix[len];
+    char postfix[len + 1];
 
     convertToPostfix(infix, postfix);
 

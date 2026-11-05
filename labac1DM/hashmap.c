@@ -69,11 +69,11 @@ hash_map_t *hash_map_insert(hash_map_t *map, char *key, int value)
 
     size_t index = hash(key) % map->size;
 
-    while (map->entries[index].key != NULL) // if hash func return identical values
+    while (map->entries[index].key != NULL)
     {
         if (index == map->size)
         {
-            return hash_map_insert(hash_map_expand(map), key, value); // expand hashMap if there is no space left
+            return hash_map_insert(hash_map_expand(map), key, value);
         }
 
         if (!strcmp(map->entries[index].key, key))
@@ -82,6 +82,11 @@ hash_map_t *hash_map_insert(hash_map_t *map, char *key, int value)
             return map;
         }
         index++;
+    }
+
+    if (index == map->size)
+    {
+        return hash_map_insert(hash_map_expand(map), key, value);
     }
 
     map->entries[index].key = calloc(strlen(key) + 1, sizeof(char));
@@ -124,10 +129,9 @@ int hash_map_get(hash_map_t *map, char *key)
     {
         char *current = map->entries[index].key;
 
-        if (current == NULL)
-            continue;
-        else
+        if (current != NULL && !strcmp(current, key))
             return map->entries[index].value;
+        continue;
     }
 
     return -1;
